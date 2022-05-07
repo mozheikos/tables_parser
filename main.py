@@ -168,8 +168,15 @@ def get_transaction():
         count = conn.execute(count_sql).fetchone()[0]
         limit = 10000
         expression = f"order by `date`"
+        total_transactions = count - offset
         while offset < count:
-
+            progress = int(((count - offset) / total_transactions) * 100)
+            progress_bar_ok = "X" * (100 - progress)
+            progress_bar_rem = "_" * progress
+            print(
+                f"\r{progress_bar_ok + progress_bar_rem}{100 - progress}%, remaining {count - offset} items",
+                end=""
+            )
             sql = f"""
                 select
                     IF (ISNULL(`in_message / src`), account_addr, `in_message / src`)  as source,
